@@ -18,7 +18,7 @@ javafx {
     modules = [ 'javafx.controls' ]
 }
 
-mainClassName = 'HelloFX'
+mainClassName = 'bb.HelloFX'
 
 compileKotlin {
     kotlinOptions {
