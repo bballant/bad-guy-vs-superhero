@@ -18,7 +18,7 @@ javafx {
     modules = [ 'javafx.controls' ]
 }
 
-mainClassName = 'bb.HelloFX'
+mainClassName = 'bb.BadGuyMain'
 
 compileKotlin {
     kotlinOptions {
@@ -28,5 +28,14 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions {
         jvmTarget = "11"
+    }
+}
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "bb.BadGuyMain"
+    }
+    configurations["compileClasspath"].forEach { file ->
+        from(zipTree(file.absoluteFile))
     }
 }
