@@ -28,7 +28,7 @@ class HelloFX : Application() {
         val scene = Scene(grid, 600.0, 400.0)
         val theWord = "Foobar"
 
-        val scenetitle = Text("Are you " + getCool() + "?")
+        val scenetitle = Text("Are you " + "cool" + "?")
         scenetitle.font = Font.font("Ubuntu Regular", FontWeight.NORMAL, 20.0)
         grid.add(scenetitle, 0, 0, theWord.length, 1)
 
