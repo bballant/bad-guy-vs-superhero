@@ -83,7 +83,7 @@ fun titleScene(stage: Stage): Scene {
 fun getYouLoseScene(stage: Stage, gameState: GameState): Scene {
     val img = ImageView("you_lose.png")
     img.fitHeight = 560.0
-    val label = Label("The word was: " + gameState.word + ". Press Enter To Continue")
+    val label = Label("The word was " + gameState.word + ". Press Enter To Continue")
     label.font = MESSAGE_FONT
     label.alignment = Pos.CENTER
     label.minWidth = 780.0
@@ -103,7 +103,7 @@ fun getYouLoseScene(stage: Stage, gameState: GameState): Scene {
 fun getYouWinScene(stage: Stage, gameState: GameState): Scene {
     val img = ImageView("you_win.png")
     img.fitHeight = 560.0
-    val label = Label("The word was: " + gameState.word + ". Press Enter To Continue")
+    val label = Label("The word was " + gameState.word + ". Press Enter To Continue")
     label.font = MESSAGE_FONT
     label.alignment = Pos.CENTER
     label.minWidth = 780.0
