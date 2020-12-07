@@ -1,27 +1,16 @@
 package bb
 
 import javafx.application.Application
-import javafx.event.EventHandler
-import javafx.geometry.Insets
-import javafx.geometry.Pos
-import javafx.scene.Scene
-import javafx.scene.control.Button
-import javafx.scene.control.Label
-import javafx.scene.control.TextArea
-import javafx.scene.control.TextField
-import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyEvent
-import javafx.scene.layout.GridPane
-import javafx.scene.paint.Color
-import javafx.scene.text.Font
-import javafx.scene.text.FontWeight
-import javafx.scene.text.Text
 import javafx.stage.Stage
+import java.io.File
 
 class BadGuyMain : Application() {
 
     override fun start(stage: Stage) {
-        val scene = titleScene(stage)
+        val wordsFilePath =
+            if (parameters.raw.isEmpty()) "words_file" // sample words in resources
+            else parameters.raw.first()
+        val scene = titleScene(stage, initialGameState(File(wordsFilePath).readLines().shuffled()))
         stage.scene = scene
         stage.show()
     }
@@ -29,7 +18,7 @@ class BadGuyMain : Application() {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            launch(bb.BadGuyMain::class.java)
+            launch(bb.BadGuyMain::class.java, *args)
         }
     }
 }

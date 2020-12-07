@@ -17,50 +17,52 @@ import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
 import javafx.stage.Stage
 
-data class GameState(val word: String, val guessed: Set<Char>, val lastMessage: String);
+data class WordState(val unseen: List<String>, val seen: List<String>)
+data class GameState(val wordState: WordState, val word: String, val guessed: Set<Char>, val lastMessage: String);
 
 val MESSAGE_FONT = Font.font("DejaVu Sans", FontWeight.BOLD, 20.0)
 val LETTER_FONT = Font.font("DejaVu Sans Mono", FontWeight.EXTRA_BOLD, 40.0)
 val MAX_GUESSES = 12;
-val WORD_LIST = listOf(
-        "SKATEBOARD",
-        "CAUGHT",
-        "MASCOT",
-        "TAUGHT",
-        "SAW",
-        "MIMIC",
-        "HOW",
-        "DISRUPT",
-        "AGAINST",
-        "KNEW",
-        "KNOW"
-)
 
-fun resetGameState() = GameState(WORD_LIST.shuffled()[0], emptySet(), "")
+fun initialGameState(wordList:  List<String>): GameState {
+    return GameState(WordState(wordList, emptyList()), wordList.first(), emptySet(), "")
+}
+
+fun makeSeen(wordState: WordState) : WordState {
+    return if (wordState.unseen.isEmpty()) wordState
+    else WordState(wordState.unseen.drop(1), wordState.seen + wordState.unseen.first())
+}
+
+fun resetGame(gameState: GameState): GameState {
+    val wordState = makeSeen(gameState.wordState)
+    return if (wordState.unseen.isEmpty())
+        initialGameState(wordState.seen.shuffled())
+    else {
+        GameState(wordState, wordState.unseen.first(), emptySet(), "")
+    }
+}
 
 fun doGuess(gameState: GameState, guess: Char): GameState {
-    if (guess in gameState.guessed) {
-        return gameState.copy(lastMessage = "You already tried that, fool!")
+    return if (guess in gameState.guessed) {
+        gameState.copy(lastMessage = "You already tried that, fool!")
     } else {
-        val recordedGuesses = gameState.guessed.plus(guess)
+        val gs = gameState.copy(guessed = gameState.guessed.plus(guess))
         val targetLetters = gameState.word.toSet()
-        return if (guess in targetLetters) {
-            val gs = GameState(gameState.word, recordedGuesses, "You got one!")
-            if (recordedGuesses.containsAll(targetLetters))
-                gs.copy(lastMessage = "You Won!")
-            else gs
+        if (guess in targetLetters) {
+            if (gs.guessed.containsAll(targetLetters)) gs.copy(lastMessage = "You Won!")
+            else gs.copy(lastMessage = "You got one!")
         } else {
-            val wrongGuesses = (recordedGuesses subtract gameState.word.toSet())
+            val wrongGuesses = (gs.guessed subtract gameState.word.toSet())
             if (wrongGuesses.size >= MAX_GUESSES) {
-                GameState(gameState.word, recordedGuesses, "Game Over!")
+                gs.copy(lastMessage = "Game Over!")
             } else {
-                GameState(gameState.word, recordedGuesses, "Nuts, try again")
+                gs.copy(lastMessage = "Nuts, try again")
             }
         }
     }
 }
 
-fun titleScene(stage: Stage): Scene {
+fun titleScene(stage: Stage, gameState: GameState): Scene {
     val img = ImageView("title.png")
     img.fitHeight = 560.0
     val label = Label("Press Enter To Continue")
@@ -72,7 +74,7 @@ fun titleScene(stage: Stage): Scene {
     val scene = Scene(vbox, 800.0, 600.0)
     scene.addEventHandler(KeyEvent.KEY_PRESSED) { key: KeyEvent ->
         if (key.code == KeyCode.ENTER) {
-            val newScene = getNextScene(stage, resetGameState())
+            val newScene = getNextScene(stage, gameState)
             stage.scene = newScene
             stage.show()
         }
@@ -83,7 +85,7 @@ fun titleScene(stage: Stage): Scene {
 fun getYouLoseScene(stage: Stage, gameState: GameState): Scene {
     val img = ImageView("you_lose.png")
     img.fitHeight = 560.0
-    val label = Label("The word was " + gameState.word + ". Press Enter To Continue")
+    val label = Label("The word was *" + gameState.word + "*!. Press Enter To Continue.")
     label.font = MESSAGE_FONT
     label.alignment = Pos.CENTER
     label.minWidth = 780.0
@@ -92,7 +94,7 @@ fun getYouLoseScene(stage: Stage, gameState: GameState): Scene {
     val scene = Scene(vbox, 800.0, 600.0)
     scene.addEventHandler(KeyEvent.KEY_PRESSED) { key: KeyEvent ->
         if (key.code == KeyCode.ENTER) {
-            val newScene = titleScene(stage)
+            val newScene = titleScene(stage, resetGame(gameState))
             stage.scene = newScene
             stage.show()
         }
@@ -103,7 +105,7 @@ fun getYouLoseScene(stage: Stage, gameState: GameState): Scene {
 fun getYouWinScene(stage: Stage, gameState: GameState): Scene {
     val img = ImageView("you_win.png")
     img.fitHeight = 560.0
-    val label = Label("The word was " + gameState.word + ". Press Enter To Continue")
+    val label = Label("The word was *" + gameState.word + "*! Press Enter To Continue.")
     label.font = MESSAGE_FONT
     label.alignment = Pos.CENTER
     label.minWidth = 780.0
@@ -112,7 +114,7 @@ fun getYouWinScene(stage: Stage, gameState: GameState): Scene {
     val scene = Scene(vbox, 800.0, 600.0)
     scene.addEventHandler(KeyEvent.KEY_PRESSED) { key: KeyEvent ->
         if (key.code == KeyCode.ENTER) {
-            val newScene = titleScene(stage)
+            val newScene = titleScene(stage, resetGame(gameState))
             stage.scene = newScene
             stage.show()
         }
