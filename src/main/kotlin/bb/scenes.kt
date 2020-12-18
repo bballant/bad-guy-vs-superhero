@@ -18,7 +18,8 @@ import javafx.scene.text.Text
 import javafx.stage.Stage
 
 data class WordState(val unseen: List<String>, val seen: List<String>)
-data class GameState(val wordState: WordState, val word: String, val guessed: Set<Char>, val lastMessage: String);
+data class GameState(val wordState: WordState, val word: String,
+                     val guessed: Set<Char>, val lastMessage: String);
 
 val MESSAGE_FONT = Font.font("DejaVu Sans", FontWeight.BOLD, 20.0)
 val LETTER_FONT = Font.font("DejaVu Sans Mono", FontWeight.EXTRA_BOLD, 40.0)
@@ -35,9 +36,9 @@ fun makeSeen(wordState: WordState) : WordState {
 
 fun resetGame(gameState: GameState): GameState {
     val wordState = makeSeen(gameState.wordState)
-    return if (wordState.unseen.isEmpty())
+    return if (wordState.unseen.isEmpty()) {
         initialGameState(wordState.seen.shuffled())
-    else {
+    } else {
         GameState(wordState, wordState.unseen.first(), emptySet(), "")
     }
 }
@@ -139,6 +140,7 @@ fun getGameStateScene(stage: Stage, gameState: GameState): Scene {
     val leFitWidth = (baseImgWidth * (1 - (remGuesses / MAX_GUESSES.toDouble()))) + 1.0
     remGuessesImage.fitHeight = leFitHeight
     remGuessesImage.fitWidth = leFitWidth
+
     val remGuessesImageVBox = VBox(remGuessesImage)
     remGuessesImageVBox.minHeight = baseImgHeight
     remGuessesImageVBox.minWidth = baseImgWidth
@@ -169,6 +171,10 @@ fun getGameStateScene(stage: Stage, gameState: GameState): Scene {
     wordLabel.style = "-fx-background-color: LightGoldenRodYellow"
     wordLabel.alignment = Pos.CENTER
 
+    val guessHero = ImageView("hero.png")
+    guessHero.fitHeight = 100.0
+    guessHero.fitWidth = 150.0
+
     val guessText = TextField()
     guessText.maxWidth = 100.0
     guessText.font = LETTER_FONT
@@ -179,6 +185,7 @@ fun getGameStateScene(stage: Stage, gameState: GameState): Scene {
         stage.scene = newScene
         stage.show()
     }
+
     val guessButton = Button("Guess!")
     guessButton.minWidth = 50.0
     guessButton.font = LETTER_FONT
@@ -192,11 +199,12 @@ fun getGameStateScene(stage: Stage, gameState: GameState): Scene {
     }
 
     val scoreBox = HBox(remGuessesImageVBox, guessedLabel)
-    val guessBox = HBox(guessText, guessButton)
+    val guessBox = HBox(guessHero, guessText, guessButton)
     guessBox.padding = Insets(10.0, 10.0, 10.0, 10.0)
     guessBox.alignment = Pos.CENTER
     guessBox.spacing = 100.0
-    val vbox = VBox(titleLabel, scoreBox, remGuessesLabel, wordLabel, message, guessBox, Text(""))
+    val vbox = VBox(titleLabel, scoreBox, remGuessesLabel,
+        wordLabel, message, guessBox, Text(""))
     vbox.alignment = Pos.CENTER
     vbox.padding = Insets(20.0, 20.0, 20.0, 20.0)
     vbox.spacing = 10.0

@@ -7,10 +7,12 @@ import java.io.File
 class BadGuyMain : Application() {
 
     override fun start(stage: Stage) {
-        val wordsFilePath =
-            if (parameters.raw.isEmpty()) "words_file" // sample words in resources
-            else parameters.raw.first()
-        val scene = titleScene(stage, initialGameState(File(wordsFilePath).readLines().shuffled()))
+        val wordsFile =
+            if (parameters.raw.isEmpty()) {
+                File(javaClass.getResource("/word_list").toURI())
+            } else File(parameters.raw.first())
+        val scene = titleScene(stage,
+            initialGameState(wordsFile.readLines().shuffled()))
         stage.scene = scene
         stage.show()
     }
