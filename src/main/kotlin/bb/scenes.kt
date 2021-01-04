@@ -125,10 +125,23 @@ fun getYouWinScene(stage: Stage, gameState: GameState): Scene {
 
 fun getGameStateScene(stage: Stage, gameState: GameState): Scene {
 
-    val titleLabel = Label("╰(◣﹏◢)╯ Bad Guy vs Superhero! ╰(◣﹏◢)╯")
+    val titleLabel = Label("Bad Guy vs Superhero!")
     titleLabel.font = Font.font("DejaVu Sans", FontWeight.BOLD, 30.0)
     titleLabel.padding = Insets(10.0)
     titleLabel.alignment = Pos.CENTER
+
+    val titleBadGuy = ImageView("bad_guy.png")
+    titleBadGuy.fitHeight = 50.0
+    titleBadGuy.fitWidth = 75.0
+
+    val titleBadGuy2 = ImageView("hero.png")
+    titleBadGuy2.fitHeight = 50.0
+    titleBadGuy2.fitWidth = 75.0
+
+    val titleBox = HBox(titleBadGuy, titleLabel, titleBadGuy2);
+    titleBox.padding = Insets(10.0, 10.0, 10.0, 10.0)
+    titleBox.alignment = Pos.CENTER
+    titleBox.spacing = 10.0
 
     val wrongGuesses = (gameState.guessed subtract gameState.word.toSet())
     val remGuesses = MAX_GUESSES - wrongGuesses.size
@@ -203,7 +216,7 @@ fun getGameStateScene(stage: Stage, gameState: GameState): Scene {
     guessBox.padding = Insets(10.0, 10.0, 10.0, 10.0)
     guessBox.alignment = Pos.CENTER
     guessBox.spacing = 100.0
-    val vbox = VBox(titleLabel, scoreBox, remGuessesLabel,
+    val vbox = VBox(titleBox, scoreBox, remGuessesLabel,
         wordLabel, message, guessBox, Text(""))
     vbox.alignment = Pos.CENTER
     vbox.padding = Insets(20.0, 20.0, 20.0, 20.0)
